@@ -42,7 +42,7 @@ POST {baseUrl}/v1/{board}/transcripts/{usmleId}
 
 ## Examples
 
-[Request a New Transcript](#request-a-new-transcript)
+[Request a New Transcript](#request-a-new-transcript) \
 [Too Soon to Request a New Transcript](#too-soon-to-request-a-new-transcript)
 ***
 
