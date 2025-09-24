@@ -14,8 +14,11 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
+using System.Collections.Generic;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Json;
+using System.Security.Policy;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -80,19 +83,55 @@ namespace Fsmb.Api.Usmle.Client
         }
         #endregion
 
-        /// <summary>Get Applicant By FID</summary>
-        /// <param name="fid">FID of the applicant.</param>        
-        /// <returns>Applicant, if any</returns>
-        public virtual Applicant GetApplicantByFid ( string fid )
-                    => GetApplicantByFidAsync(fid, CancellationToken.None).GetAwaiter().GetResult();
+        /// <summary>Gets a summary of available transcripts given the criteria.</summary>
+        /// <param name="request">The transcripts to retrieve.</param>        
+        /// <returns>List of transcripts that meet the criteria.</returns>
+        public virtual PagedOffsetList<TranscriptSummary> GetAvailableTranscriptsSummary ( TranscriptSummaryRequest request )
+                    => GetAvailableTranscriptsSummaryAsync(request, CancellationToken.None).GetAwaiter().GetResult();
 
-        /// <summary>Get Applicant By FID</summary>
-        /// <param name="fid">FID of the applicant.</param>
-        /// <param name="cancellationToken">Cancellation token.</param>
-        /// <returns>Applicant, if any</returns>
-        public virtual async Task<Applicant> GetApplicantByFidAsync ( string fid, CancellationToken cancellationToken = default )
+        /// <summary>Gets a summary of available transcripts given the criteria.</summary>
+        /// <param name="request">The transcripts to retrieve.</param>        
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>List of transcripts that meet the criteria.</returns>
+        public virtual async Task<PagedOffsetList<TranscriptSummary>> GetAvailableTranscriptsSummaryAsync ( TranscriptSummaryRequest request, CancellationToken cancellationToken = default )
+        {
+            var url = GetResourceUrl("transcripts/summary");
+
+            // Add query parameters
+            if (request != null)
+            {
+                var query = ToQueryString(request);
+                if (!String.IsNullOrEmpty(query))
+                    url = String.Concat(url, "?", query);
+            }
+
+            var message = new HttpRequestMessage(HttpMethod.Get, url);
+            await PrepareRequestAsync(message, cancellationToken).ConfigureAwait(false);                                   
+
+            using (var response = await Client.SendAsync(message, cancellationToken).ConfigureAwait(false))
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return new PagedOffsetList<TranscriptSummary>();
+
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadFromJsonAsync<PagedOffsetList<TranscriptSummary>>(cancellationToken).ConfigureAwait(false);
+            }            
+        }
+
+
+        /// <summary>Gets the current USMLE transcript for a USMLE ID.</summary>
+        /// <param name="usmleId">The USMLE ID of the physician.</param>        
+        /// <returns>Transcript, if any.</returns>
+        public virtual Transcript GetCurrentTranscript ( string usmleId )
+                    => GetCurrentTranscriptAsync(usmleId, CancellationToken.None).GetAwaiter().GetResult();
+
+        /// <summary>Gets the current USMLE transcript for a USMLE ID.</summary>
+        /// <param name="usmleId">The USMLE ID of the physician.</param>        
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Transcript, if any.</returns>
+        public virtual async Task<Transcript> GetCurrentTranscriptAsync ( string usmleId, CancellationToken cancellationToken = default )
         {            
-            var url = GetResourceUrl(String.Join("/", "applicants", fid));
+            var url = GetResourceUrl(String.Join("/", "transcripts", usmleId, "current"));
 
             var request = new HttpRequestMessage(HttpMethod.Get, url);
             await PrepareRequestAsync(request, cancellationToken).ConfigureAwait(false);
@@ -103,9 +142,83 @@ namespace Fsmb.Api.Usmle.Client
                     return null;
 
                 response.EnsureSuccessStatusCode();
-                return await response.Content.ReadFromJsonAsync<Applicant>(cancellationToken).ConfigureAwait(false);
+                return await response.Content.ReadFromJsonAsync<Transcript>(cancellationToken).ConfigureAwait(false);
             };
         }
+
+        /// <summary>Gets the USMLE transcript file for a USMLE ID.</summary>
+        /// <param name="usmleId">The USMLE ID of the physician.</param>        
+        /// <returns>Transcript PDF, if any.</returns>
+        public virtual byte[] GetUsmleTranscriptFile ( string usmleId )
+                    => GetUsmleTranscriptFileAsync(usmleId, CancellationToken.None).GetAwaiter().GetResult();
+
+        /// <summary>Gets the USMLE transcript file for a USMLE ID.</summary>
+        /// <param name="usmleId">The USMLE ID of the physician.</param>        
+        /// <param name="cancellationToken">Cancellation token</param>
+        /// <returns>Transcript PDF, if any</returns>
+        public virtual async Task<byte[]> GetUsmleTranscriptFileAsync ( string usmleId, CancellationToken cancellationToken = default )
+        {
+            var url = GetResourceUrl(String.Join("/", "transcripts", usmleId, "files/usmle"));
+
+            var request = new HttpRequestMessage(HttpMethod.Get, url);
+            await PrepareRequestAsync(request, cancellationToken).ConfigureAwait(false);
+
+            using (var response = await Client.SendAsync(request, cancellationToken).ConfigureAwait(false))
+            {
+                if (response.StatusCode == System.Net.HttpStatusCode.NotFound || response.StatusCode == System.Net.HttpStatusCode.NoContent)
+                    return null;
+
+                response.EnsureSuccessStatusCode();
+                return await response.Content.ReadAsByteArrayAsync().ConfigureAwait(false);
+            }
+        }
+
+        /// <summary>Requests a new transcript be generated for the given USMLE ID.</summary>
+        /// <param name="usmleId">The USMLE ID of the physician.</param>                
+        /// <remarks>
+        /// Note: Transcripts can take 24 hours or more to be created. Once requested clients should periodically attempt to get the updated transcript until it is generated.
+        /// <para/>
+        /// A new transcript can only be requested if the following conditions apply:
+        /// <list type="bullet">
+        /// <item>The physician has previously requested a transcript to the entity.</item>
+        /// <item>The transcript has not expired.</item>
+        /// <item>A new transcript has not been requested in the last 24 hours.</item>
+        /// </list>
+        /// </remarks>
+        public virtual void RequestNewTranscript ( string usmleId )
+                    => RequestNewTranscriptAsync(usmleId, CancellationToken.None).GetAwaiter().GetResult();
+
+        /// <summary>Requests a new transcript be generated for the given USMLE ID.</summary>
+        /// <param name="usmleId">The USMLE ID of the physician.</param>                
+        /// <remarks>
+        /// Note: Transcripts can take 24 hours or more to be created. Once requested clients should periodically attempt to get the updated transcript until it is generated.
+        /// <para/>
+        /// A new transcript can only be requested if the following conditions apply:
+        /// <list type="bullet">
+        /// <item>The physician has previously requested a transcript to the entity.</item>
+        /// <item>The transcript has not expired.</item>
+        /// <item>A new transcript has not been requested in the last 24 hours.</item>
+        /// </list>
+        /// </remarks>
+        public virtual async Task RequestNewTranscriptAsync ( string usmleId, CancellationToken cancellationToken = default )
+        {
+            var url = GetResourceUrl(String.Join("/", "transcripts", usmleId));
+
+            var request = new HttpRequestMessage(HttpMethod.Post, url);
+            await PrepareRequestAsync(request, cancellationToken).ConfigureAwait(false);
+
+            using (var response = await Client.SendAsync(request, cancellationToken).ConfigureAwait(false))
+            {                
+                switch (response.StatusCode) {
+                    case HttpStatusCode.NotFound: throw new InvalidOperationException("Physician does not have a previous request or it has expired.");
+                    case HttpStatusCode.Conflict: throw new InvalidOperationException("A new transcript has already been requested recently, wait for a while and try again.");
+
+                    //Handle regular errors
+                    default: response.EnsureSuccessStatusCode(); break;
+                }                
+            }
+        }
+
         #region Protected Members
 
         /// <summary>Gets the underlying HTTP client.</summary>
@@ -122,7 +235,7 @@ namespace Fsmb.Api.Usmle.Client
             return _accessToken;
         }
 
-        protected string GetResourceUrl ( string resource ) => String.Join("/", _baseUrl, resource);
+        protected string GetResourceUrl ( string resource ) => String.Join("/", _baseUrl, resource);        
 
         protected virtual async Task PrepareRequestAsync ( HttpRequestMessage request, CancellationToken cancellationToken )
         {
@@ -137,6 +250,22 @@ namespace Fsmb.Api.Usmle.Client
         #endregion
 
         #region Private Members
+
+        private static string ToQueryString ( TranscriptSummaryRequest request )
+        {
+            var items = new List<string>();
+
+            items.Add($"fromDate={request.FromDate:yyyy-MM-dd}");
+            items.Add($"toDate={request.ToDate:yyyy-MM-dd}");
+            if (!String.IsNullOrEmpty(request.OrderBy))
+                items.Add($"orderBy={WebUtility.UrlEncode(request.OrderBy)}");
+            if (request.Limit.HasValue)
+                items.Add($"limit={request.Limit}");
+            if (request.Offset.HasValue)
+                items.Add($"offset={request.Offset}");
+
+            return String.Join("&", items);
+        }
 
         private readonly UsmleApiClientCredentials _credentials;
         private readonly string _baseUrl;

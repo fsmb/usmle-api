@@ -23,20 +23,20 @@ namespace Fsmb.Api.Usmle.Client.Models
     {
         /// <summary>State or province code/summary>
         [Required(AllowEmptyStrings = false)]        
-        [MaxLength(3)]
+        [StringLength(3)]
         public string Code { get; set; }
 
         /// <summary>Description/summary>
         [Required(AllowEmptyStrings = false)]        
-        [MaxLength(100)]
+        [StringLength(100)]
         public string Description { get; set; }
 
         /// <summary>ISO Country code/summary>
-        [MaxLength(2)]
+        [StringLength(2)]
         public string CountryCode { get; set; }
 
         /// <summary>Country description/summary>
-        [MaxLength(100)]
+        [StringLength(100)]
         public string CountryDescription { get; set; }
     }
 }

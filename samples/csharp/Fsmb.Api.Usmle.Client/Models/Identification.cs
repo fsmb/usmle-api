@@ -14,48 +14,13 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
-using System.ComponentModel.DataAnnotations;
 
 namespace Fsmb.Api.Usmle.Client.Models
 {
     /// <summary>Identity information/summary>
     public class Identification
     {
-        /// <summary>SSN/summary>        
-        [MaxLength(9)]
-        public string Ssn { get; set; }
-
-        /// <summary>Last 4 of the SSN/summary>        
-        [MaxLength(4)]
-        public string SsnLast4 { get; set; }
-
-        /// <summary>NPI/summary>        
-        [MaxLength(10)]
-        public string Npi { get; set; }
-
-        /// <summary>USMLE ID/summary>        
-        [MaxLength(9)]
-        public string UsmleId { get; set; }
-
-        /// <summary>US citizen indicator/summary>
-        [MaxLength(1)]
-        public string IsUSCitizen { get; set; }
-
         /// <summary>Date of birth/summary>
-        public DateTime BirthDate { get; set; }
-
-        /// <summary>City of birth/summary>
-        [Required(AllowEmptyStrings = false)]        
-        [MaxLength(50)]
-        public string BirthCity { get; set; }
-
-        /// <summary>State/province of birth/summary>
-        [Required]        
-        public StateOrProvince BirthStateOrProvince { get; set; }
-
-        /// <summary>Gender/summary>
-        [Required(AllowEmptyStrings = false)]        
-        [MaxLength(1)]
-        public string Gender { get; set; }
+        public DateTime? BirthDate { get; set; }
     }
 }

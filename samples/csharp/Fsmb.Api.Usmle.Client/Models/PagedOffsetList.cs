@@ -13,33 +13,35 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-using System;
 using System.Collections.Generic;
 using System.Linq;
 
-using Fsmb.Api.Usmle.Client.Authentication;
-
-namespace Fsmb.Api.Usmle.Client
+namespace Fsmb.Api.Usmle.Client.Models
 {
-    /// <summary>Provides the credentials for the API.</summary>
-    public class UsmleApiClientCredentials : OAuthClientCredentials
+    /// <summary>Paged list of items</summary>
+    /// <typeparam name="T">Type of the paged items</typeparam>
+    public class PagedOffsetList<T>
     {
-        /// <summary>Initializes an instance of the <see cref="UsmleApiClientCredentials"/> class.</summary>
-        public UsmleApiClientCredentials ()
-        {
-            TokenUrl = "connect/token";
-            Scopes = new string[] { "usmle.read" };
-        }
+        /// <summary>Paging information</summary>
+        public PagingMetadata Metadata { get; set; } = new PagingMetadata();
 
-        public UsmleApiClientCredentials RequestNewTranscriptsPermission ( )
-        {
-            if (!Scopes.Contains("usmle.create_transcript"))
-            {
-                var scopes = new List<string>(Scopes) { "usmle.create_transcript" };
-                Scopes = scopes.ToArray();
-            }
+        /// <summary>Items on current page</summary>
+        public IEnumerable<T> Items { get; set; } = Enumerable.Empty<T>();
+    }
 
-            return this;
-        }
+    /// <summary>Paging data</summary>
+    public class PagingMetadata
+    {
+        /// <summary>Total number of items</summary>
+        public int TotalCount { get; set; }
+
+        /// <summary>Items on current page</summary>
+        public int Count { get; set; }
+
+        /// <summary>Offset provided in request</summary>
+        public int Offset { get; set; }
+
+        /// <summary>Limit provided in request</summary>
+        public int Limit { get; set; }
     }
 }

@@ -1,6 +1,6 @@
 # UsmleInformation
 
-USMLE Information
+USMLE information
 
 | Name | Type | Required | Description |
 | - | - | - | - |

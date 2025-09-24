@@ -29,7 +29,7 @@ namespace Fsmb.Api.Usmle
 
         /// <summary>Gets or sets the maximum number of items to display in an array or collection.</summary>        
         /// <default>Default is all items.</default>
-        public int MaxItemsLength { get; set; } = -1;
+        public int MaxItemsLength { get; set; } = 0;
 
         /// <summary>Determines if properties with <see langword="null"/> values are shown.</summary>
         public bool ShowNullProperties { get; set; } = false;

@@ -1,6 +1,6 @@
 # NbmeInformation
 
-NBME Information
+NBME information
 
 | Name | Type | Required | Description |
 | - | - | - | - |

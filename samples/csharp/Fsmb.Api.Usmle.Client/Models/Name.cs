@@ -18,24 +18,25 @@ using System.ComponentModel.DataAnnotations;
 
 namespace Fsmb.Api.Usmle.Client.Models
 {
+    /// <summary>Name of a person</summary>
     public class Name
     {
         /// <summary>First name/summary>
         [Required(AllowEmptyStrings = false)]        
-        [MaxLength(50)]
+        [StringLength(50)]
         public string FirstName { get; set; }
 
         /// <summary>Middle name/summary>
-        [MaxLength(50)]
+        [StringLength(50)]
         public string MiddleName { get; set; }
 
         /// <summary>Last name/summary>
         [Required(AllowEmptyStrings = false)]
-        [MaxLength(50)]
+        [StringLength(50)]
         public string LastName { get; set; }
 
         /// <summary>Suffix/summary>
-        [MaxLength(4)]
+        [StringLength(4)]
         public string Suffix { get; set; }
     }
 }

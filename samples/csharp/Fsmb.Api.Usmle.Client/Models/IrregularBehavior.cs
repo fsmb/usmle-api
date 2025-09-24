@@ -14,32 +14,19 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 
-using Fsmb.Api.Usmle.Client.Authentication;
-
-namespace Fsmb.Api.Usmle.Client
+namespace Fsmb.Api.Usmle.Client.Models
 {
-    /// <summary>Provides the credentials for the API.</summary>
-    public class UsmleApiClientCredentials : OAuthClientCredentials
+    /// <summary>Irregular behavior</summary>
+    public class IrregularBehavior
     {
-        /// <summary>Initializes an instance of the <see cref="UsmleApiClientCredentials"/> class.</summary>
-        public UsmleApiClientCredentials ()
-        {
-            TokenUrl = "connect/token";
-            Scopes = new string[] { "usmle.read" };
-        }
+        /// <summary>Irregular behavior description</summary>
+        [StringLength(100)]
+        public string Description { get; set; }
 
-        public UsmleApiClientCredentials RequestNewTranscriptsPermission ( )
-        {
-            if (!Scopes.Contains("usmle.create_transcript"))
-            {
-                var scopes = new List<string>(Scopes) { "usmle.create_transcript" };
-                Scopes = scopes.ToArray();
-            }
-
-            return this;
-        }
+        /// <summary>Irregular behavior note</summary>
+        [StringLength(1000)]
+        public string Note { get; set; }
     }
 }

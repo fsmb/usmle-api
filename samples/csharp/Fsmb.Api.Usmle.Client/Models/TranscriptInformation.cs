@@ -14,32 +14,22 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
 
-using Fsmb.Api.Usmle.Client.Authentication;
-
-namespace Fsmb.Api.Usmle.Client
+namespace Fsmb.Api.Usmle.Client.Models
 {
-    /// <summary>Provides the credentials for the API.</summary>
-    public class UsmleApiClientCredentials : OAuthClientCredentials
+    /// <summary>Transcript information</summary>
+    public class TranscriptInformation
     {
-        /// <summary>Initializes an instance of the <see cref="UsmleApiClientCredentials"/> class.</summary>
-        public UsmleApiClientCredentials ()
-        {
-            TokenUrl = "connect/token";
-            Scopes = new string[] { "usmle.read" };
-        }
+        /// <summary>Determines if an FCVS profile was released</summary>
+        public bool HasFcvsProfile { get; set; }
 
-        public UsmleApiClientCredentials RequestNewTranscriptsPermission ( )
-        {
-            if (!Scopes.Contains("usmle.create_transcript"))
-            {
-                var scopes = new List<string>(Scopes) { "usmle.create_transcript" };
-                Scopes = scopes.ToArray();
-            }
+        /// <summary>Date the FCVS profile was released, if any</summary>
+        public DateTime? FcvsReleaseDate { get; set; }
 
-            return this;
-        }
+        /// <summary>Determines if a standalone transcript request was sent</summary>
+        public bool HasTranscriptRequest { get; set; }
+
+        /// <summary>Date the transcript request was sent, if any</summary>
+        public DateTime? TranscriptSentDate { get; set; }
     }
 }

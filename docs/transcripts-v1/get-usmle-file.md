@@ -1,4 +1,4 @@
-# Get Transcript File
+# Get USMLE Transcript File
 
  Gets the USMLE transcript file for a USMLE ID.
 

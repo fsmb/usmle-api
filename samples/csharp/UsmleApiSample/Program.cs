@@ -41,6 +41,9 @@ internal class Program
             ClientSecret = options.ClientSecret            
         };
 
+        if (options.EnableNewTranscripts)
+            credentials.RequestNewTranscriptsPermission();
+
         //HttpClient requires that base addresses end with a slash
         var httpClient = new HttpClient() {
             BaseAddress = new Uri(options.Url.EnsureEndsWith("/"))
@@ -48,22 +51,58 @@ internal class Program
 
         return new UsmleApiClient(httpClient, clientOptions, credentials);
     }
-    
-    // Get applicant data by a FID
-    private async Task GetApplicantByFidAsync ( UsmleApiClient client, string fid, CancellationToken cancellationToken )
+
+    // Get summary of transcripts
+    private async Task GetAvailableTranscriptsAsync ( UsmleApiClient client, TranscriptSummaryRequest request, CancellationToken cancellationToken )
     {
         //Call API
-        Terminal.WriteDebug($"Getting applicant data for FID {fid}");
-        var data = await client.GetApplicantByFidAsync(fid, cancellationToken).ConfigureAwait(false);
+        Terminal.WriteDebug($"Getting summary of transcripts between {request.FromDate:d} and {request.ToDate:d}");
+        var data = await client.GetAvailableTranscriptsSummaryAsync(request, cancellationToken).ConfigureAwait(false);
+        if (!(data?.Items?.Any() ?? false))
+        {
+            Terminal.WriteWarning("No data found");
+            return;
+        }
+        
+        Terminal.WriteObject("Results", data);
+    }
+
+    // Get current transcript for a specific USMLE ID
+    private async Task GetCurrentTranscriptAsync ( UsmleApiClient client, string usmleId, CancellationToken cancellationToken )
+    {
+        //Call API
+        Terminal.WriteDebug($"Getting current transcript for USMLE ID {usmleId}");
+        var data = await client.GetCurrentTranscriptAsync(usmleId, cancellationToken).ConfigureAwait(false);
         if (data == null)
             Terminal.WriteWarning("No data found");
         else
             Terminal.WriteObject("Transcript", data);
     }
 
-    private static string GetFullName ( Name name )
-                    => String.Join(" ", name.FirstName, name.MiddleName, name.LastName, name.Suffix);
-    
+    // Get USMLE transcript file for a specific USMLE ID
+    private async Task GetUsmleTranscriptFileAsync ( UsmleApiClient client, string usmleId, string targetFile, CancellationToken cancellationToken )
+    {        
+        //Call API
+        Terminal.WriteDebug($"Getting USMLE transcript file for USMLE ID {usmleId}");
+        var data = await client.GetUsmleTranscriptFileAsync(usmleId, cancellationToken).ConfigureAwait(false);
+        if (data?.Length == 0)
+            Terminal.WriteWarning("No data found");
+        else
+        {            
+            await File.WriteAllBytesAsync(targetFile, data, cancellationToken).ConfigureAwait(false);
+
+            Terminal.Write($"{data.Length} bytes saved to '{targetFile}'");
+        }        
+    }
+
+    // Requests a new transcript
+    private async Task RequestNewTranscriptAsync ( UsmleApiClient client, string usmleId, CancellationToken cancellationToken )
+    {
+        //Call API
+        Terminal.WriteDebug($"Requestings a new transcript for USMLE ID {usmleId}");
+        
+        await client.RequestNewTranscriptAsync(usmleId, cancellationToken).ConfigureAwait(false);        
+    }
     #endregion
 
     #region Private Members        
@@ -73,7 +112,13 @@ internal class Program
         Terminal.WriteLine("USMLE API Options");
         Terminal.WriteLine("".PadLeft(20, '-'));
 
-        Terminal.WriteLine("1) Get the applicant data for a specific FID");
+        Terminal.WriteLine("1) Get the current transcript for a specific USMLE ID");
+        Terminal.WriteLine("2) Get the USMLE transcript file for a specific USMLE ID");
+        Terminal.WriteLine("3) Get a summary of transcripts");
+
+        if (_options.EnableNewTranscripts)
+            Terminal.WriteLine("4) Request a new transcript (must have been granted the appropriate permissions)");
+
         Terminal.WriteLine("0) Quit");
 
         do
@@ -81,7 +126,15 @@ internal class Program
             switch (Terminal.ReadKey(true).KeyChar)
             {
                 case '0': return OnQuitAsync;
-                case '1': return OnGetApplicantByFidAsync;
+                case '1': return OnGetCurrentTranscriptAsync;
+                case '2': return OnGetUsmleTranscriptFileAsync;
+                case '3': return OnGetAvailableTranscriptsAsync;
+                case '4':
+                {
+                    if (_options.EnableNewTranscripts)
+                        return OnRequestNewTranscriptAsync;
+                    break;
+                }
             };
         } while (true);
     }
@@ -98,13 +151,13 @@ internal class Program
         //Override defaults
         if (String.IsNullOrEmpty(options.Url))
         {
-            var url = Terminal.ReadString($"URL? (press ENTER to use default of {ProgramOptions.DefaultUrl}) ");
+            var url = Terminal.ReadString($"URL? (press ENTER to use default of {ProgramOptions.DefaultUrl}) ", allowEmptyStrings: true);
             options.Url = String.IsNullOrEmpty(url) ? ProgramOptions.DefaultUrl : url;
         };
 
         if (String.IsNullOrEmpty(options.Board))
         {
-            var board = Terminal.ReadString($"Board? (press ENTER to use default of {ProgramOptions.DefaultBoard}) ");
+            var board = Terminal.ReadString($"Board? (press ENTER to use default of {ProgramOptions.DefaultBoard}) ", allowEmptyStrings: true);
             options.Board = String.IsNullOrEmpty(board) ? ProgramOptions.DefaultBoard : board;
         };
 
@@ -114,7 +167,7 @@ internal class Program
 
         if (String.IsNullOrEmpty(options.ClientSecret))
             options.ClientSecret = Terminal.ReadString("Client Secret? ", allowEmptyStrings: false);
-
+        
         _options = options;
 
         //Create the client
@@ -130,22 +183,92 @@ internal class Program
         return Task.CompletedTask;
     }
 
-    private async Task OnGetApplicantByFidAsync ( UsmleApiClient client )
+    private async Task OnGetAvailableTranscriptsAsync ( UsmleApiClient client )
     {
         try
         {
-            //Get the FID
-            var fid = Terminal.ReadString("FID (or ENTER to cancel)? ", allowEmptyStrings: true);
-            if (String.IsNullOrEmpty(fid))
+            var fromDate = Terminal.ReadDate("From date (YYYY-MM-DD) (or ENTER to cancel)? ", allowEmpty: true);
+            if (!fromDate.HasValue)
                 return;
 
-            await GetApplicantByFidAsync(client, fid, CancellationToken.None).ConfigureAwait(false);
+            var toDate = Terminal.ReadDate("To date (YYYY-MM-DD) (or ENTER to cancel)? ", minDate: fromDate, allowEmpty: true);
+            if (!toDate.HasValue)
+                return;
+
+            var orderBy = Terminal.ReadString("Order by (ENTER to use default of `sentDate`)?", allowEmptyStrings: true);
+
+            var limit = Terminal.ReadInt32("Limit (ENTER to use default of 100)? ", minValue: 0, allowEmpty: true);            
+            var offset = Terminal.ReadInt32("OFfset (ENTER to use default of 0)? ", minValue: 0, allowEmpty: true);
+
+            var request = new TranscriptSummaryRequest() {
+                FromDate = fromDate.Value,
+                ToDate = toDate.Value,
+                OrderBy = orderBy
+            };
+
+            if (limit > 0)
+                request.Limit = limit;
+            if (offset > 0)
+                request.Offset = offset;
+
+            await GetAvailableTranscriptsAsync(client, request, CancellationToken.None).ConfigureAwait(false);
         } catch (Exception e)
         {
             e = e.Unwrap();
 
             Terminal.WriteError(e.Message);
-        };
+        }
+    }
+
+    private async Task OnGetCurrentTranscriptAsync ( UsmleApiClient client )
+    {
+        try
+        {
+            //Get the USMLE ID
+            var usmleId = Terminal.ReadUsmleId("USMLE ID? ");            
+
+            await GetCurrentTranscriptAsync(client, usmleId, CancellationToken.None).ConfigureAwait(false);
+        } catch (Exception e)
+        {
+            e = e.Unwrap();
+
+            Terminal.WriteError(e.Message);
+        }
+    }
+
+    private async Task OnGetUsmleTranscriptFileAsync ( UsmleApiClient client )
+    {
+        try
+        {
+            //Get the USMLE ID
+            var usmleId = Terminal.ReadUsmleId("USMLE ID? ");
+            
+            var targetFile = Terminal.ReadString("Enter file name to save to? ");            
+            targetFile = Path.GetFullPath(targetFile);
+
+            await GetUsmleTranscriptFileAsync(client, usmleId, targetFile, CancellationToken.None).ConfigureAwait(false);
+        } catch (Exception e)
+        {
+            e = e.Unwrap();
+
+            Terminal.WriteError(e.Message);
+        }
+    }
+
+    private async Task OnRequestNewTranscriptAsync ( UsmleApiClient client )
+    {
+        try
+        {
+            //Get the USMLE ID
+            var usmleId = Terminal.ReadUsmleId("USMLE ID? ");
+
+            await RequestNewTranscriptAsync(client, usmleId, CancellationToken.None).ConfigureAwait(false);
+        } catch (Exception e)
+        {
+            e = e.Unwrap();
+
+            Terminal.WriteError(e.Message);
+        }
     }
 
     private ProgramOptions ParseCommandLine ( string[] args )
@@ -168,6 +291,8 @@ internal class Program
                     case "clientsecret": argumentAction = value => options.ClientSecret = value; break;
                     case "url": argumentAction = value => options.Url = value; break;
                     case "board": argumentAction = value => options.Board = value; break;
+                    case "requestTranscripts": options.EnableNewTranscripts = true; break;
+                    
                     case "help": return null;
 
                     default: badArgument = true; break;
@@ -227,6 +352,7 @@ internal class Program
         Terminal.WriteLine("-clientSecret <secret> where <secret> is the client secret");
         Terminal.WriteLine($"-url <url> where <url> is the base URL (Default = {ProgramOptions.DefaultUrl})");
         Terminal.WriteLine($"-board <board> where <board> is the board code (Default = {ProgramOptions.DefaultBoard})");
+        Terminal.WriteLine("-requestTranscripts requests permission to create new transcripts (account must already have been granted permissions when account created)");
     }
 
     private UsmleApiClient _client;    

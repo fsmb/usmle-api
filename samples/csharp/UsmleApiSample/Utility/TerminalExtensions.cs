@@ -107,7 +107,7 @@ namespace Fsmb.Api.Usmle
         /// <param name="prompt">Read prompt.</param>
         /// <param name="allowEmptyString"><see langword="true"/> to allow empty values.</param>
         /// <returns>The value.</returns>
-        public static string ReadString ( this ITerminal terminal, string prompt = null, bool allowEmptyStrings = true )
+        public static string ReadString ( this ITerminal terminal, string prompt = null, bool allowEmptyStrings = false )
         {
             if (!String.IsNullOrEmpty(prompt))
                 terminal.Write(prompt);
@@ -119,6 +119,32 @@ namespace Fsmb.Api.Usmle
                     return input;
 
                 terminal.WriteError("Input is required");
+            } while (true);
+        }
+
+        /// <summary>Reads a USMLE ID.</summary>
+        /// <param name="terminal">Terminal</param>
+        /// <param name="prompt">Read prompt.</param>
+        /// <param name="allowEmptyString"><see langword="true"/> to allow empty values.</param>
+        /// <returns>The value.</returns>
+        public static string ReadUsmleId ( this ITerminal terminal, string prompt = null, bool allowEmptyStrings = false )
+        {
+            if (!String.IsNullOrEmpty(prompt))
+                terminal.Write(prompt);
+
+            do
+            {
+                var input = terminal.ReadLine().Trim();
+                if (!String.IsNullOrEmpty(input))
+                {
+                    if (IsValidUsmleId(input))
+                        return input;
+
+                    terminal.WriteError("USMLE ID must be 8 digits");
+                } else if (allowEmptyStrings)
+                    return "";
+                else 
+                    terminal.WriteError("Input is required");                                     
             } while (true);
         }
 
@@ -171,10 +197,28 @@ namespace Fsmb.Api.Usmle
         /// <summary>Writes an object.</summary>
         /// <param name="terminal">Terminal.</param>
         /// <param name="value">Value to write.</param>
-        public static void WriteObject<T> ( this ITerminal terminal, string label, T value, ObjectWriterOptions options = default )
+        public static void WriteObject<T> ( this ITerminal terminal, string label, T value, ObjectWriterOptions? options = null )
         {
-            var writer = new ObjectWriter(terminal, options);
+            if (options == null)
+                options = new ObjectWriterOptions();
+
+            var writer = new ObjectWriter(terminal, options.Value);
             writer.WriteObject(label, value);
         }
+
+        #region Private Members
+
+        private static bool IsValidUsmleId ( string value )
+        {
+            if (value.Length != 8)
+                return false;
+
+            foreach (var ch in value)
+                if (!Char.IsDigit(ch))
+                    return false;
+
+            return true;
+        }
+        #endregion
     }
 }

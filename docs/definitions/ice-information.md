@@ -1,6 +1,6 @@
 # IceInformation
 
-ICE Information
+ICE information
 
 | Name | Type | Required | Description |
 | - | - | - | - |

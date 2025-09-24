@@ -14,32 +14,31 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 
-using Fsmb.Api.Usmle.Client.Authentication;
-
-namespace Fsmb.Api.Usmle.Client
+namespace Fsmb.Api.Usmle.Client.Models
 {
-    /// <summary>Provides the credentials for the API.</summary>
-    public class UsmleApiClientCredentials : OAuthClientCredentials
+    /// <summary>Physician transcript summary</summary>
+    public class TranscriptSummary
     {
-        /// <summary>Initializes an instance of the <see cref="UsmleApiClientCredentials"/> class.</summary>
-        public UsmleApiClientCredentials ()
-        {
-            TokenUrl = "connect/token";
-            Scopes = new string[] { "usmle.read" };
-        }
+        /// <summary>USMLE ID</summary>
+        [StringLength(8, MinimumLength=8)]
+        public string UsmleId { get; set; }
 
-        public UsmleApiClientCredentials RequestNewTranscriptsPermission ( )
-        {
-            if (!Scopes.Contains("usmle.create_transcript"))
-            {
-                var scopes = new List<string>(Scopes) { "usmle.create_transcript" };
-                Scopes = scopes.ToArray();
-            }
+        /// <summary>FID of physician</summary>
+        [StringLength(9, MinimumLength = 9)]
+        public string Fid { get; set; }
 
-            return this;
-        }
+        /// <summary>Sent date</summary>
+        public DateTime SentDate { get; set; }
+
+        /// <summary>Legal name</summary>
+        public Name LegalName { get; set; }
+
+        /// <summary>Transcript information</summary>
+        public TranscriptInformation Information { get; set; }
+
+        /// <summary>Exam history summary</summary>
+        public ExamSummary ExamSummary { get; set; }
     }
 }

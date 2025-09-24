@@ -14,30 +14,49 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 
 namespace Fsmb.Api.Usmle.Client.Models
 {
-    /// <summary>Exam/summary>
+    /// <summary>Exam history/summary>
     public class Exam
     {
-        /// <summary>Type of exam/summary>
+        /// <summary>Exam code</summary>
         [Required(AllowEmptyStrings = false)]        
-        [MaxLength(100)]
-        public string ExamType { get; set; }
+        [StringLength(10)]
+        public string ExamCode { get; set; }
 
-        /// <summary>Exam date/summary>
+        /// <summary>Exam description</summary>
+        [Required(AllowEmptyStrings = false)]
+        [StringLength(100)]
+        public string ExamDescription { get; set; }
+
+        /// <summary>Date exam was taken</summary>
         public DateTime ExamDate { get; set; }
 
-        /// <summary>Number of attempts/summary>
-        public int NumberOfAttempts { get; set; }
+        /// <summary>Pass/fail status</summary>
+        [StringLength(20)]
+        public string PassFailStatus { get; set; }
 
-        /// <summary>Pass/fail status (Pass, Fail, Unknown)/summary>
-        [Required(AllowEmptyStrings = false)]        
-        [MaxLength(100)]
-        public string PassFail { get; set; }
+        /// <summary>Date score is available</summary>
+        public DateTime ScoreAvailableDate { get; set; }
 
-        /// <summary>State Code and State Board Description/summary>
-        public ExamStateBoard StateBoardDetail { get; set; }
+        /// <summary>Score</summary>
+        public int? Score { get; set; }
+
+        /// <summary>Minimum passing score</summary>
+        public int? MinimumPassScore { get; set; }
+
+        /// <summary>Note</summary>
+        [StringLength(1000)]
+        public string Note { get; set; }
+
+        /// <summary>Is there irregular behavior?</summary>
+        public bool HasIrregularBehavior { get; set; }
+
+        /// <summary>Irregular behavior</summary>
+        public IEnumerable<IrregularBehavior> IrregularBehavior { get; set; } = Enumerable.Empty<IrregularBehavior>();
     }
 }

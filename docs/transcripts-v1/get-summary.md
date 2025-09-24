@@ -68,10 +68,46 @@ GET {baseUrl}/v1/me/transcripts/??/summary?fromDate=2025-05-01&toDate=2025-05-02
 Status code: 200
 
 ```json
-[
-    ??
+{
+    "metadata": {
+        "totalCount": 1,
+        "count": 1,
+        "offset": 0,
+        "limit": 100
+    },
+    "items": [
+        {
+            "usmleId": "73013245",
+            "fid": "999999949",
+            "sentDate": "2025-09-17T00:00:00",
+            "information": {
+                "hasFcvsProfile": false,
+                "fcvsReleaseDate": null,
+                "hasTranscriptRequest": true,
+                "transcriptSentDate": "2025-09-17T00:00:00"
+            },
+            "legalName": {
+                "firstName": "Robert",
+                "middleName": "More",
+                "lastName": "Finaling-Final",
+                "suffix": "Jr"
+            },
+            "examSummary": {
+                "step1": {
+                    "lastExamDate": "2012-11-23T00:00:00",
+                    "lastPassFailStatus": "Undetermined",
+                    "attempts": 7
+                },
+                "step2CK": {
+                    "lastExamDate": "2012-10-09T00:00:00",
+                    "lastPassFailStatus": "Undetermined",
+                    "attempts": 4
+                }
+            }
+        }
+    ]
     ...
-]
+}
 ```
 
 For more examples go to [samples](/samples/).

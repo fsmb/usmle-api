@@ -13,33 +13,15 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using System.ComponentModel.DataAnnotations;
 
-using Fsmb.Api.Usmle.Client.Authentication;
-
-namespace Fsmb.Api.Usmle.Client
+namespace Fsmb.Api.Usmle.Client.Models
 {
-    /// <summary>Provides the credentials for the API.</summary>
-    public class UsmleApiClientCredentials : OAuthClientCredentials
+    /// <summary>USMLE information</summary>
+    public class UsmleInformation
     {
-        /// <summary>Initializes an instance of the <see cref="UsmleApiClientCredentials"/> class.</summary>
-        public UsmleApiClientCredentials ()
-        {
-            TokenUrl = "connect/token";
-            Scopes = new string[] { "usmle.read" };
-        }
-
-        public UsmleApiClientCredentials RequestNewTranscriptsPermission ( )
-        {
-            if (!Scopes.Contains("usmle.create_transcript"))
-            {
-                var scopes = new List<string>(Scopes) { "usmle.create_transcript" };
-                Scopes = scopes.ToArray();
-            }
-
-            return this;
-        }
+        /// <summary>USMLE Step 2 CS description</summary>
+        [StringLength(1000)]
+        public string Step2CSDescription { get; set; }
     }
 }

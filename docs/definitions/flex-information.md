@@ -1,6 +1,6 @@
 # FlexInformation
 
-FLEX Information
+FLEX information
 
 | Name | Type | Required | Description |
 | - | - | - | - |

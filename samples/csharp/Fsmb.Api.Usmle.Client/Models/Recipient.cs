@@ -13,33 +13,31 @@
  * COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, 
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
-using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 
-using Fsmb.Api.Usmle.Client.Authentication;
-
-namespace Fsmb.Api.Usmle.Client
+namespace Fsmb.Api.Usmle.Client.Models
 {
-    /// <summary>Provides the credentials for the API.</summary>
-    public class UsmleApiClientCredentials : OAuthClientCredentials
+    /// <summary>Recipient information</summary>
+    public class Recipient
     {
-        /// <summary>Initializes an instance of the <see cref="UsmleApiClientCredentials"/> class.</summary>
-        public UsmleApiClientCredentials ()
-        {
-            TokenUrl = "connect/token";
-            Scopes = new string[] { "usmle.read" };
-        }
+        /// <summary>Recipient name</summary>
+        [StringLength(100)]
+        public string Name { get; set; }
 
-        public UsmleApiClientCredentials RequestNewTranscriptsPermission ( )
-        {
-            if (!Scopes.Contains("usmle.create_transcript"))
-            {
-                var scopes = new List<string>(Scopes) { "usmle.create_transcript" };
-                Scopes = scopes.ToArray();
-            }
+        /// <summary>Address lines</summary>
+        public IEnumerable<string> AddressLines { get; set; } = Enumerable.Empty<string>();
 
-            return this;
-        }
+        /// <summary>City</summary>
+        [StringLength(50)]
+        public string City { get; set; }
+
+        /// <summary>State or province</summary>
+        public StateOrProvince StateOrProvince { get; set; }
+
+        /// <summary>Postal code</summary>
+        [StringLength(9)]
+        public string PostalCode { get; set; }
     }
 }

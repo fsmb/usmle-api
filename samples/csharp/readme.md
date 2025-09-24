@@ -1,4 +1,4 @@
-# FCVS UA Unified API Sample (C#)
+# USMLE API Sample (C#)
 
 [Run the Code](#run-the-code) \
 [Using the Class Library](#using-the-class-library) \
@@ -30,11 +30,11 @@ To use the class library in your own code do the following.
 
 1. Ensure either the project is part of your solution or build the project and reference the generated assembly in your solution.
 1. In your application's startup code store the URL to the API (see the documentation), your client ID and client secret somewhere that your code has access to such as a configuration file or environment variable.
-1. To call the API create an instance of the `UsmleClient` class and pass the configuration information stored earlier. See below for more information.     
+1. To call the API create an instance of the `UsmleApiClient` class and pass the configuration information stored earlier. See below for more information.     
 1. Use the client to make calls to the API.
    ```
    //Assuming this code is called in an async function then use await to wait for the response
-   Applicant applicant = await client.GetApplicantByFidAsync(fid).ConfigureAwait(false);
+   Transcript transcript = await client.GetCurrentTranscriptAsync(usmleId).ConfigureAwait(false);
    ```
 
 ## Configuring the Client
@@ -60,7 +60,7 @@ For .NET Core projects you should use dependency injection.
 //Configure the HTTP client
 services.AddHttpClient("Usmle")
         .ConfigureHttpClient(client => {
-            client.BaseAddress = new Uri("https://services-Usmle-demo.fsmb.org/");
+            client.BaseAddress = new Uri("<url ending with slash>");
         });
        
 //Configure the credentials to use
@@ -96,5 +96,5 @@ class FsmbService
 
 ## Change Log
 
-- 2024-Jul-03
+- 2025-Sept-23
   - Initial version

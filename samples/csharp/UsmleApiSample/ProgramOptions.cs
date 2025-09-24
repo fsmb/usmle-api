@@ -28,4 +28,6 @@ public class ProgramOptions
     public string Url { get; set; }
 
     public string Board { get; set; }
+
+    public bool EnableNewTranscripts { get; set; }
 }

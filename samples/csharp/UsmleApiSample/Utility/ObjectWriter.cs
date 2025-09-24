@@ -14,6 +14,7 @@
  * ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
  */
 using System;
+using System.Linq;
 
 namespace Fsmb.Api.Usmle
 {
@@ -58,15 +59,25 @@ namespace Fsmb.Api.Usmle
 
         private void WriteCollection(string name, System.Collections.IEnumerable items)
         {
-            WriteLine($"{name} = [");
+            var data = items.OfType<object>();
+            var count = data.Count();
+
+            if (count == 0)
+            {
+                WriteLine($"{name} = []");
+                return;
+            };
+
+            WriteLine($"{name}[{count}] = [");
             _indent.Indent();
 
-            var count = 0;
-            foreach (var item in items)
+            if (_options.MaxItemsLength > 0)
+                data = data.Take(_options.MaxItemsLength);
+
+            var index = 0;
+            foreach (var item in data)
             {
-                WriteObject($"[{count}]", item);
-                if (++count > _options.MaxItemsLength)
-                    break;
+                WriteObject($"[{index++}]", item);                
             };
 
             _indent.Unindent();
@@ -74,16 +85,23 @@ namespace Fsmb.Api.Usmle
         }
 
         private void WriteDictionary(string name, System.Collections.IDictionary dict)
-        {
-            WriteLine($"{name} = [");
+        {            
+            if (dict.Count == 0)
+            {
+                WriteLine($"{name} = []");
+                return;
+            }
+
+            WriteLine($"{name}[{dict.Count}] = [");
             _indent.Indent();
 
-            var count = 0;
-            foreach (var key in dict.Keys)
+            var keys = dict.Keys.OfType<object>();
+            if (_options.MaxItemsLength > 0)
+                keys = keys.Take(_options.MaxItemsLength);
+
+            foreach (var key in keys)
             {
-                WriteObject($"[{key.ToString()}]", dict[key]);
-                if (++count > _options.MaxItemsLength)
-                    break;
+                WriteObject($"[{key.ToString()}]", dict[key]);            
             };
 
             _indent.Unindent();
