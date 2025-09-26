@@ -15,7 +15,7 @@ Exam history
 | hasIrregularBehavior | boolean | Yes | Is there irregular behavior? |
 | irregularBehavior | [IrregularBehavior[]](irregular-behavior.md) | No | Irregular behavior |
 
-[^1]: Refer to [codes](https://github.com/fsmb/api-docs/tree/master/docs/codes) for more information.
+[^1]: Refer to [codes](pass-fail-codes.md) for more information.
 
 Possible `examCode` values include:
 

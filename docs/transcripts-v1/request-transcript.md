@@ -2,13 +2,9 @@
 
 Requests a new transcript for the given USMLE ID.
 
-*Note: Transcripts can take 24 hours or more to be created. Once requested clients should periodically attempt to get the updated transcript until it is generated.*
+Transcripts can take 24 hours or more to be created. Once requested clients should periodically attempt to get the updated transcript until it is generated. New transcripts cannot be requested more than once a day.
 
-A new transcript can only be requested if the following conditions apply:
-
-- The physician has previously requested a transcript to the entity.
-- The transcript has not expired.
-- A new transcript has not been requested in the last 24 hours.
+*Note: Refer to [Transcript Availability](availability.md) for information on when Transcripts will be available.*
 
 ```http
 POST {baseUrl}/v1/{board}/transcripts/{usmleId}
@@ -51,7 +47,7 @@ POST {baseUrl}/v1/{board}/transcripts/{usmleId}
 #### Sample Request
 
 ```http
-POST {baseUrl}/v1/me/transcripts/??
+POST {baseUrl}/v1/me/transcripts/73013245
 ```
 
 #### Sample Response
@@ -65,7 +61,7 @@ The request was successfully processed and the transcript is being generated.
 #### Sample Request
 
 ```http
-POST {baseUrl}/v1/me/transcripts/??
+POST {baseUrl}/v1/me/transcripts/73013245
 ```
 
 #### Sample Response

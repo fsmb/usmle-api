@@ -4,8 +4,7 @@
 
 The transcripts resource provides access to USMLE exam transcripts.
 
-*Note: Transcripts can only be retrieved, or re-requested, if the physician has previously submitted a transcript request through
-the [FSMB USMLE](https://usmle.fsmb.org) or [FCVS](https://myfcvs.fsmb.org) applications and designated the board as a recipient.*
+*Note: Refer to [Transcript Availability](availability.md) for information on when Transcripts will be available.*
 
 ## Operations
 
