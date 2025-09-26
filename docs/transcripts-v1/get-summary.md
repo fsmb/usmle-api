@@ -2,6 +2,8 @@
 
 Gets a summary of available transcripts given the criteria.
 
+*Note: Refer to [Transcript Availability](availability.md) for information on when Transcripts will be available.*
+
 ```http
 GET {baseUrl}/v1/{board}/transcripts/summary
 ```
@@ -60,7 +62,7 @@ Get a summary of transcripts for 1 May 2025.
 #### Sample Request
 
 ```http
-GET {baseUrl}/v1/me/transcripts/??/summary?fromDate=2025-05-01&toDate=2025-05-02
+GET {baseUrl}/v1/me/transcripts/73013245/summary?fromDate=2025-05-01&toDate=2025-05-02
 ```
 
 #### Sample Response
@@ -105,8 +107,7 @@ Status code: 200
                 }
             }
         }
-    ]
-    ...
+    ]    
 }
 ```
 

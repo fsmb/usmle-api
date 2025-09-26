@@ -2,6 +2,8 @@
 
 Gets the current USMLE transcript for a USMLE ID.
 
+*Note: Refer to [Transcript Availability](availability.md) for information on when Transcripts will be available.*
+
 ```http
 GET {baseUrl}/v1/{board}/transcripts/{usmleId}/current
 ```
@@ -33,7 +35,8 @@ GET {baseUrl}/v1/{board}/transcripts/{usmleId}/current
 
 ## Examples
 
-[Get the Transcript](#get-the-transcript)
+[Get the Transcript](#get-the-transcript) \
+[Transcript Not Available](#transcript-not-available)
 ***
 
 ### Get the Transcript
@@ -41,7 +44,7 @@ GET {baseUrl}/v1/{board}/transcripts/{usmleId}/current
 #### Sample Request
 
 ```http
-GET {baseUrl}/v1/me/transcripts/??/current
+GET {baseUrl}/v1/me/transcripts/73013245/current
 ```
 
 #### Sample Response
@@ -131,5 +134,21 @@ Status code: 200
     ...
 }
 ```
+
+***
+
+### Transcript Not Available
+
+This scenario occurs when a transcript has been requested, either by the physician or through an API request, but has not yet been made available. Clients should try again later if they are sure a transcript has been requested.
+
+#### Sample Request
+
+```http
+GET {baseUrl}/v1/me/transcripts/73013245/current
+```
+
+#### Sample Response
+
+Status code: 204
 
 For more examples go to [samples](/samples/).

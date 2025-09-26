@@ -1,6 +1,8 @@
 # Get USMLE Transcript File
 
- Gets the USMLE transcript file for a USMLE ID.
+Gets the USMLE transcript file for a USMLE ID.
+
+*Note: Refer to [Transcript Availability](availability.md) for information on when Transcripts will be available.*
 
 ```http
 GET {baseUrl}/v1/{board}/transcripts/{usmleId}/files/usmle
@@ -33,7 +35,8 @@ GET {baseUrl}/v1/{board}/transcripts/{usmleId}/files/usmle
 
 ## Examples
 
-[Get the File](#get-the-file)
+[Get the File](#get-the-file) \
+[Transcript Not Available](#transcript-not-available)
 ***
 
 ### Get the File
@@ -41,7 +44,7 @@ GET {baseUrl}/v1/{board}/transcripts/{usmleId}/files/usmle
 #### Sample Request
 
 ```http
-GET {baseUrl}/v1/me/transcripts/??/files/usmle
+GET {baseUrl}/v1/me/transcripts/73013245/files/usmle
 ```
 
 #### Sample Response
@@ -49,5 +52,19 @@ GET {baseUrl}/v1/me/transcripts/??/files/usmle
 Status code: 200
 
 Body: PDF file
+
+### Transcript Not Available
+
+This scenario occurs when a transcript has been requested, either by the physician or through an API request, but has not yet been made available. Clients should try again later if they are sure a transcript has been requested.
+
+#### Sample Request
+
+```http
+GET {baseUrl}/v1/me/transcripts/73013245/files/usmle
+```
+
+#### Sample Response
+
+Status code: 404
 
 For more examples go to [samples](/samples/).
