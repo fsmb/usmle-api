@@ -34,7 +34,7 @@ POST {baseUrl}/v1/{board}/transcripts/{usmleId}
 
 | Scope | Description |
 | -|-|
-| usmle.create_transcript | Grants permission to request new transcripts. |
+| usmle.transcript_create | Grants permission to request new transcripts. |
 
 ## Examples
 
