@@ -92,7 +92,8 @@ Status code: 200
                 "firstName": "Robert",
                 "middleName": "More",
                 "lastName": "Finaling-Final",
-                "suffix": "Jr"
+                "suffix": "Jr",
+                "isSingularName": false
             },
             "examSummary": {
                 "step1": {
