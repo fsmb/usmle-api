@@ -52,7 +52,8 @@ Physician transcript
         "firstName": "Robert",
         "middleName": "More",
         "lastName": "Finaling-Final",
-        "suffix": "Jr"
+        "suffix": "Jr",
+        "isSingularName": false
     },
     "identity": {
         "birthDate": "1945-01-06T00:00:00"
