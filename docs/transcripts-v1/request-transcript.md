@@ -2,7 +2,7 @@
 
 Requests a new transcript for the given USMLE ID.
 
-Transcripts can take 24 hours or more to be created. Once requested clients should periodically attempt to get the updated transcript until it is generated. New transcripts cannot be requested more than once a day.
+Transcripts can take 24 hours or more to be created. Once requested clients should periodically attempt to get the updated transcript until it is generated. New transcripts cannot be requested more than once a day. Only USMLE transcripts can be requested.
 
 *Note: Refer to [Transcript Availability](availability.md) for information on when Transcripts will be available.*
 
@@ -23,7 +23,7 @@ POST {baseUrl}/v1/{board}/transcripts/{usmleId}
 | Name | Type | Description |
 | - |-|-|
 | 202 Create | | Request was successful and transcript is being created |
-| 400 Bad Request | | USMLE ID is invalid |
+| 400 Bad Request | | USMLE ID is invalid or no USMLE transcripts found |
 | 403 Forbidden | | Board code is invalid |
 | 404 Not Found | | Physician does not have a previous request or it has expired |
 | 409 Conflict | | A new transcript has already been requested recently, wait for a while and try again |
