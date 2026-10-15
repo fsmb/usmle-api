@@ -23,7 +23,7 @@ POST {baseUrl}/v1/{board}/transcripts/{usmleId}
 | Name | Type | Description |
 | - |-|-|
 | 202 Create | | Request was successful and transcript is being created |
-| 400 Bad Request | | USMLE ID is invalid or no USMLE transcripts found |
+| 400 Bad Request | | USMLE ID is invalid or no USMLE transcripts available |
 | 403 Forbidden | | Board code is invalid |
 | 404 Not Found | | Physician does not have a previous request or it has expired |
 | 409 Conflict | | A new transcript has already been requested recently, wait for a while and try again |
