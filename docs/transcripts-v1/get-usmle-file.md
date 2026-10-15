@@ -31,7 +31,7 @@ If a file is returned then the following additional HTTP headers are provided.
 
 | Header | Description |
 | - | - |
-| [Last-Modified](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Last-Modified) | Sent datetime, in UTC, as specified in the transcription information |
+| [Last-Modified](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Last-Modified) | Datetime, in UTC, the transcript was sent (matches the transcript data endpoint) |
 
 ## Security
 
