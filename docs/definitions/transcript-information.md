@@ -5,10 +5,10 @@ Transcript information
 | Name | Type | Required | Description |
 | - | - | - | - |
 | hasFcvsProfile | boolean | Yes | Determines if an FCVS profile was released |
-| fcvsReleaseDate | string (date) | No | Date the FCVS profile was released, if any |
+| fcvsReleaseDate | string (date) | No | **(Deprecated: Use fcvsReleaseDateUtc)** Date the FCVS profile was released, if any |
 | fcvsReleaseDateUtc | string (datetime) | No | Datetime, in UTC, the FCVS profile was released, if any |
 | hasTranscriptRequest | boolean | Yes | Determines if a standalone transcript request was sent |
-| transcriptSentDate | string (date) | No | Date the transcript request was sent, if any |
+| transcriptSentDate | string (date) | No | **(Deprecated: Use transcriptSentDateUtc)** Date the transcript request was sent, if any |
 | transcriptSentDateUtc | string (datetime) | No | Datetime, in UTC, the transcript request was sent, if any |
 
 *Note: Any fields marked as deprecated will be removed in a future version of the API. New code should not rely on these fields. Existing code should be updated to use alternative fields.*
