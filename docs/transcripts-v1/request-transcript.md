@@ -22,7 +22,7 @@ POST {baseUrl}/v1/{board}/transcripts/{usmleId}
 
 | Name | Type | Description |
 | - |-|-|
-| 202 Create | | Request was successful and transcript is being created |
+| 201 Create | | Request was successful and transcript is being created |
 | 400 Bad Request | | USMLE ID is invalid |
 | 403 Forbidden | | Board code is invalid |
 | 404 Not Found | | Physician does not have a previous request or it has expired |
@@ -52,7 +52,7 @@ POST {baseUrl}/v1/me/transcripts/73013245
 
 #### Sample Response
 
-Status code: 202
+Status code: 201
 
 The request was successfully processed and the transcript is being generated.
 
