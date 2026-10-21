@@ -258,11 +258,11 @@ namespace Fsmb.Api.Usmle.Client
             items.Add($"fromDate={request.FromDate:yyyy-MM-dd}");
             items.Add($"toDate={request.ToDate:yyyy-MM-dd}");
             if (!String.IsNullOrEmpty(request.OrderBy))
-                items.Add($"orderBy={WebUtility.UrlEncode(request.OrderBy)}");
+                items.Add($"$orderBy={WebUtility.UrlEncode(request.OrderBy)}");
             if (request.Limit.HasValue)
-                items.Add($"limit={request.Limit}");
+                items.Add($"$limit={request.Limit}");
             if (request.Offset.HasValue)
-                items.Add($"offset={request.Offset}");
+                items.Add($"$offset={request.Offset}");
 
             return String.Join("&", items);
         }
