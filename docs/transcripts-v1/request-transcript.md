@@ -2,7 +2,7 @@
 
 Requests a new transcript for the given USMLE ID.
 
-Transcripts can take 24 hours or more to be created. Once requested clients should periodically attempt to get the updated transcript until it is generated. New transcripts cannot be requested more than once a day.
+Transcripts can take 24 hours or more to be created. Once requested clients should periodically attempt to get the updated transcript until it is generated. New transcripts cannot be requested more than once a day. Only USMLE transcripts can be requested.
 
 *Note: Refer to [Transcript Availability](availability.md) for information on when Transcripts will be available.*
 

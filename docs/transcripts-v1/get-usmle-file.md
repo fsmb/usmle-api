@@ -25,6 +25,14 @@ GET {baseUrl}/v1/{board}/transcripts/{usmleId}/files/usmle
 | 404 Not Found | | There is no transcript for the physician |
 | 403 Forbidden | | Board code is invalid |
 
+### Headers
+
+If a file is returned then the following additional HTTP headers are provided.
+
+| Header | Description |
+| - | - |
+| [Last-Modified](https://developer.mozilla.org/en-US/docs/Web/HTTP/Reference/Headers/Last-Modified) | Datetime, in UTC, the transcript was sent (matches the transcript data endpoint) |
+
 ## Security
 
 ### Scopes

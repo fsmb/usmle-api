@@ -29,7 +29,8 @@ GET {baseUrl}/v1/{board}/transcripts/summary?fromDate={fromDate}&toDate={toDate}
 This resource supports paging and sorting. The following fields can be ordered.
 
 - `fid`
-- `sentDate`
+- `sentDate` **(Deprecated)**
+- `sentDateUtc`
 - `usmleId`
 
 *Note: If there are many transcripts then the results will be paged.*
