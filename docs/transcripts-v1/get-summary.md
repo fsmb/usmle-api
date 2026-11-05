@@ -11,7 +11,7 @@ GET {baseUrl}/v1/{board}/transcripts/summary
 With optional parameters.
 
 ```http
-GET {baseUrl}/v1/{board}/transcripts/summary?fromDate={fromDate}&toDate={toDate}&orderBy={orderBy}&offset={offset}&limit={limit}
+GET {baseUrl}/v1/{board}/transcripts/summary?fromDate={fromDate}&toDate={toDate}&$orderBy={orderBy}&$offset={offset}&$limit={limit}
 ```
 
 ## URI Parameters
@@ -22,9 +22,9 @@ GET {baseUrl}/v1/{board}/transcripts/summary?fromDate={fromDate}&toDate={toDate}
 | board | path | True | string | The board code or `me`. |
 | fromDate | query | False | DateTime (format: yyyy-mm-dd) | Start date, inclusive. |
 | toDate | query | False | DateTime (format: yyyy-mm-dd) | End date, inclusive. |
-| orderBy | query | False | string | Field(s) to order by. (Default: `sentDate`) |
-| offset | query | False | number | Number of items to skip. (Default: 0) |
-| limit | query | False | number | Number of items to return. (Default: 100) |
+| $orderBy | query | False | string | Field(s) to order by. (Default: `sentDate`) |
+| $offset | query | False | number | Number of items to skip. (Default: 0) |
+| $limit | query | False | number | Number of items to return. (Default: 100) |
 
 This resource supports paging and sorting. The following fields can be ordered.
 
